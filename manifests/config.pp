@@ -1,7 +1,16 @@
 #carbon_c_relay config
-class carbon_c_relay::config () {
+class carbon_c_relay::config (
+  $port               = $::carbon_c_relay::port,
+  $config_file        = $::carbon_c_relay::config_file,
+  $log_file           = $::carbon_c_relay::log_file,
+  $workers            = $::carbon_c_relay::workers,
+  $batch_size         = $::carbon_c_relay::batch_size,
+  $queue_size         = $::carbon_c_relay::queue_size,
+  $statistics         = $::carbon_c_relay::statistics,
+  $version            = $::carbon_c_relay::version,
+) {
 
-  file { $carbon_c_relay::log_file:
+  file { $log_file:
     ensure      => 'present',
     owner       => 'www-data',
     group       => 'www-data',
@@ -15,7 +24,7 @@ class carbon_c_relay::config () {
     content     => template('carbon_c_relay/relay.init.erb')
   }
 
-  concat { $carbon_c_relay::config_file:
+  concat { $config_file:
     ensure      => present,
     owner       => 'root',
     group       => 'root',
@@ -24,7 +33,7 @@ class carbon_c_relay::config () {
   }
 
   concat::fragment { '01-relay-header':
-    target      => $carbon_c_relay::config_file,
+    target      => $config_file,
     order       => '01',
     content     => "# This file managed by Puppet\n",
   }
